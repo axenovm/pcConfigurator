@@ -12,16 +12,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-//    private final PcConfigurationRepository pcConfigurationRepository;
-//    private final PcConfigurationService pcConfigurationService;
 
     public UserService(UserRepository userRepository){
-//                       PcConfigurationRepository pcConfigurationRepository,
-//                       PcConfigurationService pcConfigurationService) {
-
         this.userRepository = userRepository;
-//        this.pcConfigurationRepository = pcConfigurationRepository;
-//        this.pcConfigurationService = pcConfigurationService;
     }
 
     @Override

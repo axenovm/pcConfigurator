@@ -55,8 +55,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // Нельзя требовать authentication == null: AnonymousAuthenticationFilter уже мог
-            // установить анонимную сессию — тогда JWT никогда не применялся бы и все POST давали бы 403.
             Authentication existing = SecurityContextHolder.getContext().getAuthentication();
             if (existing != null
                     && existing.isAuthenticated()

@@ -42,23 +42,11 @@ public class SecurityConfig {
                         .requestMatchers("/webjars/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/pc-configuration", "/pc-configuration/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/review/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/processor", "/processor/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/motherboard", "/motherboard/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/videocard", "/videocard/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/pc-case", "/pc-case/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/power-unit", "/power-unit/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/processor-cooling", "/processor-cooling/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/ram-module", "/ram-module/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/storage-device", "/storage-device/*").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                // Без formLogin() UsernamePasswordAuthenticationFilter может отсутствовать в цепочке —
-                // тогда addFilterBefore(..., UsernamePasswordAuthenticationFilter) ставит JWT в КОНЕЦ,
-                // после AuthorizationFilter, и все защищённые POST получают 403 до разбора токена.
                 .addFilterBefore(jwtAuthFilter, AuthorizationFilter.class);
 
         return http.build();
