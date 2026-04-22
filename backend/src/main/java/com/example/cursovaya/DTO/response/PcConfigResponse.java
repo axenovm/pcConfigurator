@@ -1,6 +1,7 @@
 package com.example.cursovaya.DTO.response;
 
 import ch.qos.logback.core.joran.sanity.Pair;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -27,6 +28,9 @@ public class PcConfigResponse {
     private String userName;
 
     private String videoCardModel;
+
+    @JsonProperty("isPrivate")
+    private boolean privateBuild;
 
     private List<PcConfigRamResponse> ramModules;
 

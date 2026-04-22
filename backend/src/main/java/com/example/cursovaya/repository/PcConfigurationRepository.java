@@ -10,4 +10,6 @@ import java.util.List;
 public interface PcConfigurationRepository extends JpaRepository<PcConfiguration, Long> {
 
     List<PcConfiguration> findByUserId(Long userId);
+
+    List<PcConfiguration> findByPrivateBuildFalseOrPrivateBuildIsNull();
 }

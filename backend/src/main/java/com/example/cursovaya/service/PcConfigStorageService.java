@@ -20,6 +20,8 @@ import java.util.List;
 
 @Service
 public class PcConfigStorageService {
+    private static final int MAX_STORAGE_DEVICES_PER_BUILD = 6;
+
     private final PcConfigStorageRepository pcConfigStorageRepository;
     private final StorageDeviceRepository storageDeviceRepository;
     private final PcConfigurationRepository pcConfigurationRepository;
@@ -44,6 +46,7 @@ public class PcConfigStorageService {
         if (!config.getUser().getId().equals(actorUserId)) {
             throw new AccessDeniedException("cannot add storage to another user's build");
         }
+        validateStorageLimit(config, request.getQuantity(), null);
         StorageDevice storageDevice = storageDeviceRepository.findById(request.getStorageDeviceId())
                 .orElseThrow(() -> new ResourceNotFoundException("storage device not found with id = " + request.getStorageDeviceId()));
 
@@ -70,10 +73,14 @@ public class PcConfigStorageService {
         }
         BigDecimal oldPositionPrice = current.getPrice();
 
+        PcConfiguration targetConfig = current.getPcConfiguration();
         if (request.getPcConfigurationId() != null) {
-            PcConfiguration config = pcConfigurationRepository.findById(request.getPcConfigurationId())
+            targetConfig = pcConfigurationRepository.findById(request.getPcConfigurationId())
                     .orElseThrow(() -> new ResourceNotFoundException("pc config not found with id = " + request.getPcConfigurationId()));
-            current.setPcConfiguration(config);
+            if (!targetConfig.getUser().getId().equals(actorUserId)) {
+                throw new AccessDeniedException("cannot move storage to another user's build");
+            }
+            current.setPcConfiguration(targetConfig);
         }
 
         if (request.getStorageDeviceId() != null) {
@@ -86,6 +93,7 @@ public class PcConfigStorageService {
             validateQuantity(request.getQuantity());
             current.setQuantity(request.getQuantity());
         }
+        validateStorageLimit(targetConfig, current.getQuantity(), current.getConfigStorageId());
 
         current.setPrice(current.getStorageDevice().getPrice().multiply(BigDecimal.valueOf(current.getQuantity())));
         PcConfigStorage updated = pcConfigStorageRepository.save(current);
@@ -127,6 +135,18 @@ public class PcConfigStorageService {
     private void validateQuantity(Integer quantity) {
         if (quantity == null || quantity < 1) {
             throw new ValidationException("storage quantity cannot be less than 1");
+        }
+    }
+
+    private void validateStorageLimit(PcConfiguration config, Integer requestedQuantity, Long currentStorageRowId) {
+        int totalStorageDevices = pcConfigStorageRepository.findByPcConfigurationId(config.getId())
+                .stream()
+                .filter(storage -> currentStorageRowId == null || !storage.getConfigStorageId().equals(currentStorageRowId))
+                .mapToInt(PcConfigStorage::getQuantity)
+                .sum();
+        int newTotalStorageDevices = totalStorageDevices + requestedQuantity;
+        if (newTotalStorageDevices > MAX_STORAGE_DEVICES_PER_BUILD) {
+            throw new ValidationException("storage device limit exceeded: maximum " + MAX_STORAGE_DEVICES_PER_BUILD + " per build");
         }
     }
 

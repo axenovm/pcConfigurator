@@ -4,6 +4,8 @@ import type { PcConfigRamResponse, PcConfigStorageResponse } from "../api/types"
 import type { CatalogData } from "../hooks/useCatalog";
 import { formatPrice } from "../util/money";
 
+const MAX_STORAGE_DEVICES_PER_BUILD = 6;
+
 type RamProps = {
   pcConfigurationId: number;
   catalog: CatalogData;
@@ -129,12 +131,18 @@ export function StorageEditor({ pcConfigurationId, catalog, items, onChanged }: 
       setErr("Выберите накопитель и количество");
       return;
     }
+    const requestedQty = Number(qty);
+    const existingCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    if (existingCount + requestedQty > MAX_STORAGE_DEVICES_PER_BUILD) {
+      setErr(`Максимум ${MAX_STORAGE_DEVICES_PER_BUILD} накопителей в одной сборке`);
+      return;
+    }
     setBusy(true);
     try {
       await api.pcConfigStorage.create({
         pcConfigurationId,
         storageDeviceId: Number(storageId),
-        quantity: Number(qty),
+        quantity: requestedQty,
       });
       setStorageId("");
       setOk("Накопитель добавлен.");
@@ -191,6 +199,9 @@ export function StorageEditor({ pcConfigurationId, catalog, items, onChanged }: 
       <button type="button" className="btn btn-primary" disabled={busy} onClick={() => void add()}>
         Добавить накопитель
       </button>
+      <p className="muted" style={{ marginTop: "0.6rem" }}>
+        Лимит: до {MAX_STORAGE_DEVICES_PER_BUILD} накопителей на одну сборку.
+      </p>
       <ul style={{ marginTop: "1rem", paddingLeft: "1.2rem" }}>
         {items.map((s) => (
           <li key={s.id} style={{ marginBottom: "0.5rem" }}>

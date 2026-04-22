@@ -23,6 +23,9 @@ public class PcConfiguration {
     @Column(nullable = false)
     private String buildName;
 
+    @Column(name = "is_private")
+    private Boolean privateBuild = false;
+
     //связи
 
     @OneToMany(mappedBy = "pcConfiguration")

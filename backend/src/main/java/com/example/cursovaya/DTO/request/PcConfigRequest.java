@@ -1,5 +1,6 @@
 package com.example.cursovaya.DTO.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -19,4 +20,7 @@ public class PcConfigRequest {
     private Long userId;
 
     private Long videoCardId;
+
+    @JsonProperty("isPrivate")
+    private Boolean isPrivate;
 }

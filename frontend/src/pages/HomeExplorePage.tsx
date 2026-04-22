@@ -13,7 +13,7 @@ export default function HomeExplorePage() {
     setLoading(true);
     setErr(null);
     try {
-      const all = await api.pcConfiguration.list();
+      const all = await api.pcConfiguration.listPublic();
       setList(all);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Не удалось загрузить сборки");

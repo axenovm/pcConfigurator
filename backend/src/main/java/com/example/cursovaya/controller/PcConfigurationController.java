@@ -52,6 +52,13 @@ public class PcConfigurationController {
         return ResponseEntity.ok(pcConfigurations);
     }
 
+    @GetMapping("/public")
+    public ResponseEntity<List<PcConfigResponse>> getAllPublicPcConfigurations() {
+        log.info("called method getAllPublicPcConfigurations");
+        List<PcConfigResponse> pcConfigurations = pcConfigurationService.getAllPublicPcConfigurations();
+        return ResponseEntity.ok(pcConfigurations);
+    }
+
     @PostMapping()
     public ResponseEntity<PcConfigResponse> createPcConfiguration(@RequestBody PcConfigRequest pcConfigRequest,
                                                                    @AuthenticationPrincipal UserDetailsImpl principal) {

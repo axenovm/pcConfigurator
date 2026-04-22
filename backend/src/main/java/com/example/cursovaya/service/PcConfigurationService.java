@@ -114,6 +114,10 @@ public class PcConfigurationService {
             pcConfiguration.setBuildName(pcConfigRequest.getName());
             changed = true;
         }
+        if (pcConfigRequest.getIsPrivate() != null) {
+            pcConfiguration.setPrivateBuild(pcConfigRequest.getIsPrivate());
+            changed = true;
+        }
         if (!changed) {
             return convertToResponse(pcConfiguration);
         }
@@ -211,6 +215,10 @@ public class PcConfigurationService {
         return pcConfigurationRepository.findAll().stream().map(this::convertToResponse).toList();
     }
 
+    public List<PcConfigResponse> getAllPublicPcConfigurations() {
+        return pcConfigurationRepository.findByPrivateBuildFalseOrPrivateBuildIsNull().stream().map(this::convertToResponse).toList();
+    }
+
     @Transactional
     public PcConfigResponse createPcConfiguration(PcConfigRequest pcConfigRequest, Long actorUserId) {
         if (!pcConfigRequest.getUserId().equals(actorUserId)) {
@@ -247,6 +255,7 @@ public class PcConfigurationService {
                 findById(pcConfigRequest.getVideoCardId()).orElseThrow(
                         () -> new ResourceNotFoundException("videocard with id " +
                                 pcConfigRequest.getVideoCardId() + " not found")));
+        pcConfigurationToSave.setPrivateBuild(Boolean.TRUE.equals(pcConfigRequest.getIsPrivate()));
 
         // без RAM и storage, они добавляются отдельными сущностями
         BigDecimal configPrice = getTotalPriceWithoutRAMAndStorage(pcConfigurationToSave);
@@ -283,6 +292,7 @@ public class PcConfigurationService {
         pcConfigResponse.setProcessorCoolingModel(pcConfiguration.getProcessorCooling().getModelCooling());
         pcConfigResponse.setUserName(pcConfiguration.getUser().getNickname());
         pcConfigResponse.setVideoCardModel(pcConfiguration.getVideoCard().getVideoCardModel());
+        pcConfigResponse.setPrivateBuild(Boolean.TRUE.equals(pcConfiguration.getPrivateBuild()));
 
         pcConfigResponse = addRAMToResponse(pcConfigResponse);
         return addStorageToResponse(pcConfigResponse);

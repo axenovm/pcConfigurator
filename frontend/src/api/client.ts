@@ -65,6 +65,7 @@ export const api = {
   },
   pcConfiguration: {
     list: () => request<PcConfigResponse[]>("/pc-configuration"),
+    listPublic: () => request<PcConfigResponse[]>("/pc-configuration/public", { auth: false }),
     get: (id: number) => request<PcConfigResponse>(`/pc-configuration/${id}`),
     create: (body: PcConfigRequest) =>
       request<PcConfigResponse>("/pc-configuration", { method: "POST", body: JSON.stringify(body) }),

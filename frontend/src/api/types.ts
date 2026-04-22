@@ -8,6 +8,7 @@ export type AuthResponse = {
 
 export type PcConfigRequest = {
   name: string;
+  isPrivate: boolean;
   motherboardId: number;
   pcCaseId: number;
   powerUnitId: number;
@@ -49,6 +50,7 @@ export type PcConfigStorageResponse = {
 export type PcConfigResponse = {
   id: number;
   name: string;
+  isPrivate: boolean;
   totalPrice: string;
   motherboardModel: string;
   pcCaseModel: string;

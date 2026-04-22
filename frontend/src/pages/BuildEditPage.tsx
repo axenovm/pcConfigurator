@@ -62,6 +62,7 @@ export default function BuildEditPage() {
     }
     const patch: Partial<PcConfigRequest> = {
       name: full.name,
+      isPrivate: full.isPrivate,
       motherboardId: full.motherboardId,
       pcCaseId: full.pcCaseId,
       powerUnitId: full.powerUnitId,

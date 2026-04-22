@@ -2,6 +2,7 @@ import type { CatalogData } from "../hooks/useCatalog";
 
 export type BaseFormState = {
   name: string;
+  isPrivate: boolean;
   motherboardId: string;
   pcCaseId: string;
   powerUnitId: string;
@@ -28,6 +29,14 @@ export default function BuildBaseForm({ catalog, value, onChange }: Props) {
           onChange={(e) => set({ name: e.target.value })}
           placeholder="Например, Игровой ПК 2026"
         />
+      </label>
+      <label style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <input
+          type="checkbox"
+          checked={value.isPrivate}
+          onChange={(e) => set({ isPrivate: e.target.checked })}
+        />
+        Приватная сборка (не показывать на главной странице)
       </label>
       <label>
         Процессор
@@ -117,6 +126,7 @@ export default function BuildBaseForm({ catalog, value, onChange }: Props) {
 export function emptyBaseForm(): BaseFormState {
   return {
     name: "",
+    isPrivate: false,
     motherboardId: "",
     pcCaseId: "",
     powerUnitId: "",
@@ -143,6 +153,7 @@ export function baseFormToRequest(
   }
   return {
     name: f.name.trim(),
+    isPrivate: f.isPrivate,
     motherboardId: Number(f.motherboardId),
     pcCaseId: Number(f.pcCaseId),
     powerUnitId: Number(f.powerUnitId),
@@ -165,6 +176,7 @@ export function inferBaseFormFromConfig(
   const cool = catalog.coolings.find((x) => x.modelCooling === c.processorCoolingModel);
   return {
     name: c.name,
+    isPrivate: c.isPrivate,
     motherboardId: mb ? String(mb.id) : "",
     pcCaseId: pc ? String(pc.id) : "",
     powerUnitId: psu ? String(psu.id) : "",
